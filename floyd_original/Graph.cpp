@@ -20,7 +20,7 @@ Graph::Graph()
 	}
 
 	//创建邻接矩阵并赋初值
-	_adjMatrix.assign(_vexNum, std::vector<double>(_vexNum, INT_MAX));
+	_adjMatrix.assign(_vexNum, std::vector<double>(_vexNum, UINT_MAX));
 
 	// 输入边的信息(起点、终点以及权重)，并判断每次输入的值是否合法
 	std::cout << "请输入每条边的起点和终点（顶点编号从1开始）以及其权重" << std::endl;
@@ -73,7 +73,7 @@ void Graph::print() {
 	std::cout << "图的邻接矩阵为：" << std::endl;
 	for (size_t count_row = 0; count_row < _vexNum; ++count_row) {
 		for (size_t count_col = 0; count_col < _vexNum; ++count_col) {
-			if (_adjMatrix[count_row][count_col] == INT_MAX) {
+			if (_adjMatrix[count_row][count_col] == UINT_MAX) {
 				std::cout << "∞" << " ";
 			}
 			else {
