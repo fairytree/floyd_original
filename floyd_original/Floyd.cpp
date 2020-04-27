@@ -5,7 +5,7 @@ Floyd::Floyd(Graph graph)
 	:_vexNum(graph.vexNum()), _edgeNum(graph.edgeNum()), 
 	_adjMatrix(graph.adjMatrix()), _distTo(graph.adjMatrix())
 {
-	_pathTo.assign(_vexNum, std::vector<int>(_vexNum, INT_MAX));
+	_pathTo.assign(_vexNum, std::vector<size_t>(_vexNum, INT_MAX));
 
 	//矩阵P的初值则为各个边的终点顶点的下标???
 	for (size_t row = 0; row < _vexNum; ++row) {

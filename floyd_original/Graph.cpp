@@ -20,7 +20,7 @@ Graph::Graph()
 	}
 
 	//创建邻接矩阵并赋初值
-	_adjMatrix.assign(_vexNum, std::vector<int>(_vexNum, INT_MAX));
+	_adjMatrix.assign(_vexNum, std::vector<double>(_vexNum, INT_MAX));
 
 	// 输入边的信息(起点、终点以及权重)，并判断每次输入的值是否合法
 	std::cout << "请输入每条边的起点和终点（顶点编号从1开始）以及其权重" << std::endl;
@@ -61,7 +61,7 @@ bool Graph::checkVexnum(size_t vexNum, size_t edgeNum)
 }
 
 // 判断每次输入的的边的信息是否合法
-bool Graph::checkEdgeValue(size_t start, size_t end, int weight) {
+bool Graph::checkEdgeValue(size_t start, size_t end, double weight) {
 	if (start < 1 || end < 1 || start > _vexNum || end > _vexNum) {
 		return false;
 	}
@@ -71,11 +71,8 @@ bool Graph::checkEdgeValue(size_t start, size_t end, int weight) {
 // 打印邻接矩阵
 void Graph::print() {
 	std::cout << "图的邻接矩阵为：" << std::endl;
-	int count_row = 0; //打印行的标签
-	int count_col = 0; //打印列的标签
-					   //开始打印
-	for (count_row = 0; count_row < _vexNum; ++count_row) {
-		for (count_col = 0; count_col < _vexNum; ++count_col) {
+	for (size_t count_row = 0; count_row < _vexNum; ++count_row) {
+		for (size_t count_col = 0; count_col < _vexNum; ++count_col) {
 			if (_adjMatrix[count_row][count_col] == INT_MAX) {
 				std::cout << "∞" << " ";
 			}
