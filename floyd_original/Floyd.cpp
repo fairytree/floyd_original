@@ -1,5 +1,6 @@
 #include"Floyd.h"
 
+
 //¹¹Ôìº¯Êý
 Floyd::Floyd(Graph graph)
 	:_vexNum(graph.vexNum()), _edgeNum(graph.edgeNum()), 
