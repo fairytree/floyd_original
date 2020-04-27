@@ -3,6 +3,7 @@
 #include<iostream>
 #include<string>
 #include<vector>
+#include"Graph.h"
 
 class Floyd {
 private:
