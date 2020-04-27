@@ -1,11 +1,9 @@
 #pragma once
 
-#include<iostream>
-#include<string>
-#include<vector>
 #include"Graph.h"
 
-class Floyd {
+class Floyd 
+{
 private:
     size_t _vexNum;    // 图的顶点个数 number of vertices  
     size_t _edgeNum;  // 图的边数 number of edges
