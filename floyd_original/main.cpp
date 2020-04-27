@@ -4,12 +4,10 @@
 
 int main() {
 	
-	Graph_DG graph(vexnum, edge);
-	graph.createGraph(kind);
+	Graph graph;
 	graph.print();
-	graph.Floyd();
-	graph.print_pathTo();
-	system("pause");
+	Floyd floyd(graph);
+	floyd.printPathto();
 	return 0;
 }
 
