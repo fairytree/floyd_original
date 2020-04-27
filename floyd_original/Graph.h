@@ -7,25 +7,25 @@
 class Graph 
 {
 private:
-	int _vexnum;    // 图的顶点个数 number of vertices, differentiate member variable from parameter by beginning with underscore "_".  
-	int _edge;  // 图的边数 number of edges
-	std::vector<std::vector<int>> _adjMatrix;  //  邻接矩阵, 记录图中顶点和边的关系, adjacency matrix
-	std::vector<std::vector<int>> _distTo;   // 记录到各个顶点的最短距离 
-	std::vector<std::vector<int>> _pathTo;  // 记录各个最短路径的信息
+	size_t _vexNum;    // 图的顶点个数 number of vertices  
+	size_t _edgeNum;  // 图的边数 number of edges
+	size_t _graphType;   // 图的类型，1代表有向图，2代表无向图, types of graph, directedgraph is 1, undirectedgraph is 2.
+	std::vector<std::vector<double>> _adjMatrix;  //  邻接矩阵, 记录图中顶点和边的关系, adjacency matrix
 
 public:
 	//构造函数
-	Graph(int vexnum, int edge);
+	Graph();
 	//析构函数
 	~Graph();
-	// 判断我们每次输入的的边的信息是否合法
-	//顶点从1开始编号
-	bool check_edge_value(int start, int end, int weight);
-	//创建图
-	void createGraph(int);
+	//检验输入边数和顶点数的值是否有效
+	bool checkVexnum(size_t vexnum, size_t edge);
+	// 判断每次输入的的边的信息是否合法
+	bool checkEdgeValue(size_t start, size_t end, double weight);
+	size_t vexNum() { return _vexNum; };  // 返回顶点个数
+	size_t edgeNum() { return _edgeNum; }; // 返回边的条数
+	std::vector<std::vector<double>> adjMatrix() { return _adjMatrix; };  // 返回邻接矩阵
 	//打印邻接矩阵
 	void print();
-	//求最短路径
 };
 
 

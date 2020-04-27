@@ -1,66 +1,86 @@
 #include "Graph.h"
 
 //构造函数
-Graph::Graph(int vexnum, int edge)
-	:_vexnum(vexnum), _edge(edge)  //初始化顶点数和边数
+Graph::Graph()
 {
-	_adjMatrix.assign(_vexnum, std::vector<int>(_vexnum, INT_MAX));  //为邻接矩阵开辟空间和赋初值
-	_distTo.assign(_vexnum, std::vector<int>(_vexnum, INT_MAX));
-	_pathTo.assign(_vexnum, std::vector<int>(_vexnum, INT_MAX));
+	//输入图的类型，并判断值是否合法
+	std::cout << "输入图的种类：1代表有向图，2代表无向图" << std::endl;
+	std::cin >> _graphType;
+	while (_graphType != 1 && _graphType != 2) {
+		std::cout << "输入的图的种类编号不合法，请重新输入：1代表有向图，2代表无向图" << std::endl;
+		std::cin >> _graphType;
+	}
+
+	//输入顶点数和边数，并检验值是否有效
+	std::cout << "输入图的顶点个数和边的条数：" << std::endl;
+	std::cin >> _vexNum >> _edgeNum;
+	while (!checkVexnum(_vexNum, _edgeNum)) {
+		std::cout << "输入的数值不合法，请重新输入" << std::endl;
+		std::cin >> _vexNum >> _edgeNum;
+	}
+
+	//创建邻接矩阵并赋初值
+	_adjMatrix.assign(_vexNum, std::vector<double>(_vexNum, INT_MAX));
+
+	// 输入边的信息(起点、终点以及权重)，并判断每次输入的值是否合法
+	std::cout << "请输入每条边的起点和终点（顶点编号从1开始）以及其权重" << std::endl;
+	for (size_t count = 0; count < _edgeNum; ++count) {
+		size_t start;
+		size_t end;
+		double weight;
+		std::cin >> start >> end >> weight;
+
+		while (!this->checkEdgeValue(start, end, weight)) {
+			std::cout << "输入的边的信息不合法，请重新输入" << std::endl;
+			std::cin >> start >> end >> weight;
+		}
+
+		//对邻接矩阵赋值
+		_adjMatrix[start - 1][end - 1] = weight;
+		//对于无向图，认为反向权重与正向权重相等
+		if (_graphType == 2) {
+			_adjMatrix[end - 1][start - 1] = weight;
+		}
+	}
 }
+
 
 //析构函数
 Graph::~Graph()
 {
 }
 
-// 判断我们每次输入的的边的信息是否合法
-//顶点从1开始编号
-bool Graph::check_edge_value(int start, int end, int weight) {
-	if (start < 1 || end < 1 || start > _vexnum || end > _vexnum || weight < 0) {
+
+//检验输入边数和顶点数的值是否有效
+bool Graph::checkVexnum(size_t vexNum, size_t edgeNum)
+{
+	if (vexNum <= 0 || edgeNum <= 0 || edgeNum > (vexNum * (vexNum - 1)) ) {
 		return false;
 	}
 	return true;
 }
 
-void Graph::createGraph(int kind) {
-	std::cout << "请输入每条边的起点和终点（顶点编号从1开始）以及其权重" << std::endl;
-	int start;
-	int end;
-	int weight;
-	int count = 0;
-	while (count != this->_edge) {
-		std::cin >> start >> end >> weight;
-		//首先判断边的信息是否合法
-		while (!this->check_edge_value(start, end, weight)) {
-			std::cout << "输入的边的信息不合法，请重新输入" << std::endl;
-			std::cin >> start >> end >> weight;
-		}
-		//对邻接矩阵对应上的点赋值
-		_adjMatrix[start - 1][end - 1] = weight;
-		//无向图添加上这行代码
-		if (kind == 2)
-			_adjMatrix[end - 1][start - 1] = weight;
-		++count;
+// 判断每次输入的的边的信息是否合法
+bool Graph::checkEdgeValue(size_t start, size_t end, double weight) {
+	if (start < 1 || end < 1 || start > _vexNum || end > _vexNum) {
+		return false;
 	}
+	return true;
 }
 
+// 打印邻接矩阵
 void Graph::print() {
 	std::cout << "图的邻接矩阵为：" << std::endl;
-	int count_row = 0; //打印行的标签
-	int count_col = 0; //打印列的标签
-					   //开始打印
-	while (count_row != this->_vexnum) {
-		count_col = 0;
-		while (count_col != this->_vexnum) {
-			if (_adjMatrix[count_row][count_col] == INT_MAX)
+	for (size_t count_row = 0; count_row < _vexNum; ++count_row) {
+		for (size_t count_col = 0; count_col < _vexNum; ++count_col) {
+			if (_adjMatrix[count_row][count_col] == INT_MAX) {
 				std::cout << "∞" << " ";
-			else
+			}
+			else {
 				std::cout << _adjMatrix[count_row][count_col] << " ";
-			++count_col;
+			}
 		}
 		std::cout << std::endl;
-		++count_row;
 	}
 }
 
