@@ -7,8 +7,9 @@
 class Graph 
 {
 private:
-	int _vexnum;    // 图的顶点个数 number of vertices, differentiate member variable from parameter by beginning with underscore "_".  
-	int _edge;  // 图的边数 number of edges
+	size_t _vexnum;    // 图的顶点个数 number of vertices  
+	size_t _edge;  // 图的边数 number of edges
+	size_t _kind;   // 图的类型，1代表有向图，2代表无向图, types of graph, directedgraph is 1, undirectedgraph is 2.
 	std::vector<std::vector<int>> _adjMatrix;  //  邻接矩阵, 记录图中顶点和边的关系, adjacency matrix
 
 public:
@@ -16,8 +17,10 @@ public:
 	Graph();
 	//析构函数
 	~Graph();
+	//检验输入边数和顶点数的值是否有效
+	bool checkVexnum(size_t vexnum, size_t edge)
 	// 判断我们每次输入的的边的信息是否合法
-	bool check_edge_value(int start, int end, int weight);
+	bool checkEdgeValue(size_t start, size_t end, int weight);
 	//打印邻接矩阵
 	void print();
 };
