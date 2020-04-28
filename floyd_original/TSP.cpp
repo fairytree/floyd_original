@@ -4,8 +4,8 @@
 //Space complexity - O(2^n)
 
 
-TSP::TSP(int startNode, std::vector<std::vector<double>> distance)
-	: _distance(distance), _nodeNum(distance.size()), _startNode(startNode)
+TSP::TSP(int startNode, const std::vector<std::vector<double>>& adjMatrix)
+	: _adjMatrix(adjMatrix), _nodeNum(adjMatrix.size()), _startNode(startNode - 1)
 {
 	// The finished state is when the finished state mask has all bits are set to
 	// one (meaning all the nodes have been visited).
@@ -61,7 +61,7 @@ double TSP::tsp(int i, int& state, std::vector<std::vector<double>>& memo,
 
 	// Done this tour. Return cost of going back to start node.
 	if (state == _finishedState) {
-		return _distance[i][_startNode];
+		return _adjMatrix[i][_startNode];
 	}
 
 	// Return cached answer if already computed.
@@ -79,7 +79,7 @@ double TSP::tsp(int i, int& state, std::vector<std::vector<double>>& memo,
 		}
 
 		int nextState = state | (1 << next);
-		double newCost = _distance[i][next] + tsp(next, nextState, memo, prev);
+		double newCost = _adjMatrix[i][next] + tsp(next, nextState, memo, prev);
 		if (newCost < minCost) {
 			minCost = newCost;
 			index = next;
@@ -95,7 +95,7 @@ void TSP::print()
 {
 	std::cout << "Tour: " << std::endl;
 	for (auto n : getTour()) {
-		std::cout << n << "-->";
+		std::cout << n + 1 << "-->";
 	}
 
 	std::cout << " Tour cost: " << getTourCost() << std::endl;

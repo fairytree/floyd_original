@@ -9,17 +9,22 @@ int main() {
 	floyd.printPathto();
 
 
-	// Create adjacency matrix
-	//int n = 6;
-	//std::vector<std::vector<double>> distanceMatrix(n, std::vector<double>(n, DBL_MAX));
-	//distanceMatrix[1][4] = distanceMatrix[4][1] = 2;
-	//distanceMatrix[4][2] = distanceMatrix[2][4] = 4;
-	//distanceMatrix[2][3] = distanceMatrix[3][2] = 6;
-	//distanceMatrix[3][0] = distanceMatrix[0][3] = 8;
-	//distanceMatrix[0][5] = distanceMatrix[5][0] = 10;
-	//distanceMatrix[5][1] = distanceMatrix[1][5] = 12;
+	//  test example
+	//  输入图的种类：1代表有向图，2代表无向图
+	//	2
+	//	输入图的顶点个数和边的条数：
+	//	6 6
+	//	请输入每条边的起点和终点（顶点编号从1开始）以及其权重
+	//	2 5 2
+	//	5 3 4
+	//	3 4 6
+	//	4 1 8
+	//	1 6 10
+	//	6 2 12
+	//  TSP path: 1-->4-->3-->5-->2-->6-->1
+	//  TSP cost:42.0
 
-	// Run the solver
+	// Run the solver, the first node is # 1. 
 	TSP solver(1, graph.adjMatrix());
 
 	// Prints: [0, 3, 2, 4, 1, 5, 0]

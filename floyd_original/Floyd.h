@@ -13,7 +13,7 @@ private:
 
 public:
     //构造函数
-    Floyd(Graph graph);
+    Floyd(const Graph& graph);
     //析构函数
     ~Floyd();
     //打印最短路径

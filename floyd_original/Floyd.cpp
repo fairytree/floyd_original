@@ -2,16 +2,15 @@
 
 
 //构造函数
-Floyd::Floyd(Graph graph)
-	:_vexNum(graph.vexNum()), _edgeNum(graph.edgeNum()), 
-	_adjMatrix(graph.adjMatrix()), _distTo(graph.adjMatrix())
+Floyd::Floyd(const Graph& graph) 
+	:_vexNum(graph.vexNum()), _edgeNum(graph.edgeNum()), _distTo(graph.adjMatrix())
 {
 	_pathTo.assign(_vexNum, std::vector<size_t>(_vexNum, UINT_MAX));
 
 	//矩阵_pathTo的初值为各个边的终点顶点
 	for (size_t row = 0; row < _vexNum; ++row) {
 		for (size_t col = 0; col < _vexNum; ++col) {
-			if (_adjMatrix[row][col] != UINT_MAX) {
+			if (_distTo[row][col] != UINT_MAX) {  //??? "graph._adjMatrix" not working
 				_pathTo[row][col] = col;
 			}
 		}
@@ -40,7 +39,7 @@ Floyd::~Floyd()
 void Floyd::printPathto() {
 	std::cout << "各个顶点对的最短路径：" << std::endl;
 	for (size_t row = 0; row < _vexNum; ++row) {
-		for (size_t col = row + 1; col < _vexNum; ++col) {
+		for (size_t col = 0; col < _vexNum; ++col) {
 			std::cout << "v" << std::to_string(row + 1) << "---"
 				<< "v" << std::to_string(col + 1) << " weight: "
 				<< _distTo[row][col] << "; pathTo: "

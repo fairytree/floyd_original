@@ -1,9 +1,6 @@
 #pragma once
 
-//#include"Graph.h"
-//#include"Floyd.h"
-#include<vector>
-#include <iostream>
+#include"Graph.h"
 
 class TSP
 {
@@ -14,14 +11,12 @@ private:
 	double _minTourCost = DBL_MAX;
 	bool _ranSolver = false;
 
-	std::vector<std::vector<double>> _distance;
+	std::vector<std::vector<double>> _adjMatrix;
 	std::vector<int> _tour;
-
-
 
 public:
 	//构造函数
-	TSP(int startNode, std::vector<std::vector<double>> distance);
+	TSP(int startNode, const std::vector<std::vector<double>>& adjMatrix);
 	//析构函数
 	~TSP();
 	// Returns the optimal tour for the traveling salesman problem.
