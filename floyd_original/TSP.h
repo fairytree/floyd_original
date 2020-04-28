@@ -1,38 +1,25 @@
 #pragma once
 
-//#include"Graph.h"
-//#include"Floyd.h"
-#include<vector>
-#include <iostream>
+#include"Graph.h"
 
 class TSP
 {
 private:
-	int _nodeNum;
-	int _startNode;
-	int _finishedState;
-	double _minTourCost = DBL_MAX;
-	bool _ranSolver = false;
-
-	std::vector<std::vector<double>> _distance;
-	std::vector<int> _tour;
-
-
+	int _startNode;   //起始顶点
+	int _finishedState;  //结束state
+	double _minTourCost = DBL_MAX;  //最短路径cost
+	std::vector<std::vector<double>> _adjMatrix;  //邻接矩阵
+	std::vector<int> _tour;  //最短路径
 
 public:
 	//构造函数
-	TSP(int startNode, std::vector<std::vector<double>> distance);
+	TSP(int startNode, const std::vector<std::vector<double>>& adjMatrix);
 	//析构函数
 	~TSP();
-	// Returns the optimal tour for the traveling salesman problem.
-	std::vector<int> getTour();
-	// Returns the minimal tour cost.
-	double getTourCost();
-	// Run the solver
-	void solve();
-	// tsp
+	// travelling_salesman_problem algorithm (tsp)
 	double tsp(int i, int& state, std::vector<std::vector<double>>& memo,
-		std::vector<std::vector<int>>& prev);
+		std::vector<std::vector<int>>& prev, 
+		const std::vector<std::vector<double>>& adjMatrix);
 	//print path and cost
 	void print();
 };

@@ -27,6 +27,9 @@
     <ClCompile Include="TSP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Floyd_new.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Floyd.h">
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Floyd_new.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

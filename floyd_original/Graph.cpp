@@ -42,6 +42,14 @@ Graph::Graph()
 			_adjMatrix[end - 1][start - 1] = weight;
 		}
 	}
+
+	// 如果没有手动输入自循环权重，则设置任意顶点到自己的距离为0
+	for (size_t i = 0; i < _vexNum; ++i) {
+		if (_adjMatrix[i][i] == UINT_MAX) {
+			_adjMatrix[i][i] = 0;
+			std::cout << _adjMatrix[i][i];
+		}
+	}
 }
 
 
@@ -54,8 +62,16 @@ Graph::~Graph()
 //检验输入边数和顶点数的值是否有效
 bool Graph::checkVexnum(size_t vexNum, size_t edgeNum)
 {
-	if (vexNum <= 0 || edgeNum <= 0 || edgeNum > (vexNum * (vexNum - 1)) ) {
-		return false;
+	// graphType 1代表有向图，2代表无向图
+	if (_graphType == 1) {
+		if (vexNum <= 0 || edgeNum <= 0 || edgeNum > (vexNum * (vexNum - 1))) {
+			return false;
+		}
+	}
+	else {
+		if (vexNum <= 0 || edgeNum <= 0 || edgeNum > (vexNum * (vexNum - 1)/2)) {
+			return false;
+		}
 	}
 	return true;
 }
