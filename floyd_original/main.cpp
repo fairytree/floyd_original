@@ -1,13 +1,9 @@
-#include"Floyd.h"
+//#include"Floyd.h"
+#include"Floyd_new.h"
 #include "Graph.h"
 #include"TSP.h"
 
 int main() {
-	Graph graph;
-	graph.print();
-	Floyd floyd(graph);
-	floyd.printPathto();
-
 
 	//  test example
 	//  输入图的种类：1代表有向图，2代表无向图
@@ -24,12 +20,21 @@ int main() {
 	//  TSP path: 1-->4-->3-->5-->2-->6-->1
 	//  TSP cost:42.0
 
-	// Run the solver, the first node is # 1. 
-	TSP solver(1, graph.adjMatrix());
-
-	// Prints: [0, 3, 2, 4, 1, 5, 0]
-	// Print: 42.0
-	solver.print();
+	// 创建图；
+	Graph graph;
+	// 打印图；
+	graph.print();
+	
+	// 用Floyd Algorithm计算各顶点对之间最短距离信息，并打印；
+	floyd(graph);
+	
+	//Floyd floyd(graph);
+	//floyd.printPathto();
+	
+	// 用Travelling_Salesman_Problem(TSP) Algorithm计算遍历所有顶点的最短路径信息；
+	TSP tspSolver(1, graph.adjMatrix());
+	//打印TSP结果
+	tspSolver.print();
 
 	return 0;
 }
