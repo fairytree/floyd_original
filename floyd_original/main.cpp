@@ -32,9 +32,10 @@ int main() {
 	//floyd.printPathto();
 	
 	// 用Travelling_Salesman_Problem(TSP) Algorithm计算遍历所有顶点的最短路径信息；
-	TSP tspSolver(1, graph.adjMatrix());
+	TSP result(1, graph.adjMatrix());
+	result.solver(graph.adjMatrix());
 	//打印TSP结果
-	tspSolver.print();
+	result.print();
 
 	return 0;
 }

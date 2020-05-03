@@ -1,79 +1,88 @@
 #include "TSP.h"
 
 //Time complexity - O(2^n * n^2)
-//Space complexity - O(2^n)
+//Space complexity - O(n * 2^n)
 
 TSP::TSP(int startNode, const std::vector<std::vector<double>>& adjMatrix)
 {
 	// The finished state is when the finished state mask has all bits are set to 1 (meaning all the nodes have been visited).
-	_finishedState = (1 << adjMatrix.size()) - 1;
+	// example:  1100(the right most number represents the 1st room) means the 1st and 2nd room are unvisited, the 3rd and 4th are visited. 
+	_allRoomVisited = (1 << adjMatrix.size()) - 1;
 	_startNode = startNode - 1;
-	
-	std::vector<std::vector<double>> memo(adjMatrix.size(), std::vector<double>((1 << adjMatrix.size()), NULL));
-	std::vector<std::vector<int>> prev(adjMatrix.size(), std::vector<int>((1 << adjMatrix.size()), NULL));
-	
-	int state = 1 << _startNode;
-	_minTourCost = tsp(_startNode, state, memo, prev, adjMatrix);
-
-	// Regenerate path
-	int index = _startNode;
-	while (true) {
-		_tour.push_back(index);
-		int nextIndex = prev[index][state];
-		if (nextIndex == NULL) {
-			break;
-		}
-		int nextState = state | (1 << nextIndex);
-		state = nextState;
-		index = nextIndex;
-	}
-	_tour.push_back(_startNode);
 }
 
 TSP::~TSP()
 {
 }
 
-double TSP::tsp(int i, int& state, std::vector<std::vector<double>>& memo,
-	std::vector<std::vector<int>>& prev, const std::vector<std::vector<double>>& adjMatrix) 
+void TSP::solver(const std::vector<std::vector<double>>& adjMatrix)
+{
+	int roomVisited = 1 << _startNode;
+
+	 // state record robot's current position and rooms that have been visited
+	std::vector<std::vector<double>> state(adjMatrix.size(), std::vector<double>((1 << adjMatrix.size()), NULL));
+
+	// prev record the path
+	std::vector<std::vector<int>> pathTo(adjMatrix.size(), std::vector<int>((1 << adjMatrix.size()), NULL));
+
+	_minPathCost = tspRecursive(_startNode, roomVisited, state, pathTo, adjMatrix);
+
+	// Regenerate path
+	int index = _startNode;
+	while (true) {
+		_path.push_back(index);
+		int nextRoomIndex = pathTo[index][roomVisited];
+		if (nextRoomIndex == NULL) {
+			break;
+		}
+		int nextVisited = roomVisited | (1 << nextRoomIndex);
+		roomVisited = nextVisited;
+		index = nextRoomIndex;
+	}
+	_path.push_back(_startNode);
+}
+
+
+double TSP::tspRecursive(int robotPosition, int& roomVisited, std::vector<std::vector<double>>& state,
+	std::vector<std::vector<int>>& pathTo, const std::vector<std::vector<double>>& adjMatrix)
 {
 	// Done this tour. Return cost of going back to start node.
-	if (state == _finishedState) {
-		return adjMatrix[i][_startNode];
+	if (roomVisited == _allRoomVisited) {
+		return adjMatrix[robotPosition][_startNode];
 	}
 
 	// Return cached answer if already computed.
-	if (memo[i][state] != NULL) {
-		return memo[i][state];
+	if (state[robotPosition][roomVisited] != NULL) {
+		return state[robotPosition][roomVisited];
 	}
 
 	double minCost = DBL_MAX;
 	int index = -1;
-	for (int next = 0; next < adjMatrix.size(); next++) {
-		// Skip if the next node has already been visited.
-		if ((state & (1 << next)) != 0) {  
+	for (int nextRoomIndex = 0; nextRoomIndex < adjMatrix.size(); nextRoomIndex++) {
+		// Skip if the next room has already been visited.
+		if ((roomVisited & (1 << nextRoomIndex)) != 0) {
 			continue;
 		}
-		int nextState = state | (1 << next);
-		double newCost = adjMatrix[i][next] + tsp(next, nextState, memo, prev, adjMatrix);
+		int nextVisited = roomVisited | (1 << nextRoomIndex);
+		double newCost = adjMatrix[robotPosition][nextRoomIndex] + tspRecursive(nextRoomIndex, nextVisited, state, pathTo, adjMatrix);
 		if (newCost < minCost) {
 			minCost = newCost;
-			index = next;
+			index = nextRoomIndex;
 		}
 	}
 
-	prev[i][state] = index;
-	return memo[i][state] = minCost;
+	pathTo[robotPosition][roomVisited] = index;
+	return state[robotPosition][roomVisited] = minCost;
 }
 
 // Print path and cost
 void TSP::print()
 {
 	std::cout << "Travelling_Salesman_Problem Solution: " << std::endl;
-	std::cout << "Tour: ";
-	for (auto n : _tour) {
+	std::cout << "Path: ";
+	for (auto n : _path) {
 		std::cout << n + 1 << "-->";
 	}
 
-	std::cout << " Tour cost: " << _minTourCost << std::endl;
+	std::cout << " Path cost: " << _minPathCost << std::endl;
 }
