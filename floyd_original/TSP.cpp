@@ -3,80 +3,124 @@
 //Time complexity - O(2^n * n^2)
 //Space complexity - O(n * 2^n)
 
-TSP::TSP(int startNode, const std::vector<std::vector<double>>& adjMatrix)
+//构造函数
+TSP::TSP(unsigned int startNode, const Graph& graph)
 {
-	// The finished state is when the finished state mask has all bits are set to 1 (meaning all the nodes have been visited).
-	// example:  1100(the right most number represents the 1st room) means the 1st and 2nd room are unvisited, the 3rd and 4th are visited. 
-	_allRoomVisited = (1 << adjMatrix.size()) - 1;
+	// 房间（顶点）总数为图的顶点总数
+	_totalRoomNumber = graph.vexNum();
+
+	// 用bits来表示“所有顶点被访问过的状态”
+	// 例如一共有6个房间（顶点），初始状态为000001（右边第一个数字代表第1个房间，机器人从第1个房间开始，故默认第1个房间已被访问)
+	// 所有顶点被访问过的状态为111000时表示，第1、2、3个房间尚未访问过，第4、5、6个房间已被访问过
+	// 当所有房间全部访问完毕的时候，最终的值为111111
+	_allRoomVisited = (1 << _totalRoomNumber) - 1;
+
+	// "startNode-1"是因为用户输入顶点的编号是从1开始的
 	_startNode = startNode - 1;
+
+	// 初始化最短路径成本为极大值
+	double _minPathCost = DBL_MAX;
 }
 
+//析构函数
 TSP::~TSP()
 {
 }
 
-void TSP::solver(const std::vector<std::vector<double>>& adjMatrix)
+//生成遍历所有顶点需要途经的具体路径信息
+void TSP::generatePath(const Floyd& floyd)
 {
-	int roomVisited = 1 << _startNode;
+	// cost 记录机器人从当前房间位置及房间访问状态"进入下一房间及状态所需要的成本(cost)
+	std::vector<std::vector<double>> cost(_totalRoomNumber, std::vector<double>((1 << _totalRoomNumber), NULL));
 
-	 // state record robot's current position and rooms that have been visited
-	std::vector<std::vector<double>> state(adjMatrix.size(), std::vector<double>((1 << adjMatrix.size()), NULL));
+	// PathTo 记录遍历所有房间（顶点）的最短访问顺序
+	std::vector<std::vector<unsigned int>> pathTo(_totalRoomNumber, std::vector<unsigned int>((1 << _totalRoomNumber), NULL));
 
-	// prev record the path
-	std::vector<std::vector<int>> pathTo(adjMatrix.size(), std::vector<int>((1 << adjMatrix.size()), NULL));
+	// 默认机器人的起始位置（顶点）已被访问过
+	unsigned int roomVisitedState = 1 << _startNode;
 
-	_minPathCost = tspRecursive(_startNode, roomVisited, state, pathTo, adjMatrix);
+	// _minPathCost 记录遍历所有顶点的最小成本之和
+	_minPathCost = tspRecursive(_startNode, roomVisitedState, cost, pathTo, floyd);
 
-	// Regenerate path
-	int index = _startNode;
+	// 生成遍历所有顶点需要途经的具体路径信息
+	// currentPosition表示机器人目前所在位置，nexPosition表示机器人下一个位置
+	unsigned int currentPosition = _startNode;
+	unsigned int nextPosition = currentPosition;
 	while (true) {
-		_path.push_back(index);
-		int nextRoomIndex = pathTo[index][roomVisited];
-		if (nextRoomIndex == NULL) {
+		//根据Floyd的各顶点间最短路径，循环输出机器人访问下一个顶点需要经过的过渡顶点
+		size_t bridge = floyd.pathTo()[currentPosition][nextPosition] ;
+		while (bridge != nextPosition) {
+			_path.push_back(bridge);
+			bridge = floyd.pathTo()[bridge][nextPosition];
+		}
+		_path.push_back(nextPosition);
+
+		//根据TSP生成的访问顶点的顺序，继续访问下一个顶点，直到全部访问完毕
+		unsigned int nextRoomToVisit = pathTo[nextPosition][roomVisitedState];
+		if (nextRoomToVisit == NULL) {
 			break;
 		}
-		int nextVisited = roomVisited | (1 << nextRoomIndex);
-		roomVisited = nextVisited;
-		index = nextRoomIndex;
+
+		// nextVisitedState表示当下一个房间被访问后，所有房间被访问过的状态
+		unsigned int nextVisitedState = roomVisitedState | (1 << nextRoomToVisit);
+		roomVisitedState = nextVisitedState;
+		currentPosition = nextPosition;
+		nextPosition = nextRoomToVisit;
+	}
+
+	// 当所有房间都访问完毕后，生成回到起点的具体路径
+	size_t bridge = floyd.pathTo()[nextPosition][_startNode];
+	while (bridge != _startNode) {
+		_path.push_back(bridge);
+		bridge = floyd.pathTo()[bridge][_startNode];
 	}
 	_path.push_back(_startNode);
 }
 
 
-double TSP::tspRecursive(int robotPosition, int& roomVisited, std::vector<std::vector<double>>& state,
-	std::vector<std::vector<int>>& pathTo, const std::vector<std::vector<double>>& adjMatrix)
+// 递归求解最短路径, 即求解从当前机器人位置及房间访问状态，到终点（所有房间被全部访问）的最小成本及路径
+double TSP::tspRecursive(unsigned int robotPosition, unsigned int& roomVisitedState, 
+	std::vector<std::vector<double>>& cost,
+	std::vector<std::vector<unsigned int>>& pathTo,
+	const Floyd& floyd)
 {
-	// Done this tour. Return cost of going back to start node.
-	if (roomVisited == _allRoomVisited) {
-		return adjMatrix[robotPosition][_startNode];
+	// 当所有房间全部被访问过后，返回从当前位置回到起点的成本（cost).
+	if (roomVisitedState == _allRoomVisited) {
+		return floyd.distTo()[robotPosition][_startNode];
 	}
 
-	// Return cached answer if already computed.
-	if (state[robotPosition][roomVisited] != NULL) {
-		return state[robotPosition][roomVisited];
+	// 如果成本已经计算过，直接使用
+	if (cost[robotPosition][roomVisitedState] != NULL) {
+		return cost[robotPosition][roomVisitedState];
 	}
 
+	// minCost表示从当前机器人位置及房间访问状态，到终点（所有房间被全部访问）的最小成本
 	double minCost = DBL_MAX;
-	int index = -1;
-	for (int nextRoomIndex = 0; nextRoomIndex < adjMatrix.size(); nextRoomIndex++) {
-		// Skip if the next room has already been visited.
-		if ((roomVisited & (1 << nextRoomIndex)) != 0) {
+	int nextRoomToVisit = -1;
+	// 机器人的下一个访问位置可以是任一房间（顶点)
+	for (int nextRoomIndex = 0; nextRoomIndex < _totalRoomNumber; nextRoomIndex++) {
+		// 跳过已被访问过的房间（顶点）
+		if ((roomVisitedState & (1 << nextRoomIndex)) != 0) {
 			continue;
 		}
-		int nextVisited = roomVisited | (1 << nextRoomIndex);
-		double newCost = adjMatrix[robotPosition][nextRoomIndex] + tspRecursive(nextRoomIndex, nextVisited, state, pathTo, adjMatrix);
+
+		// nextVisitedState表示当下一个房间被访问后，所有房间被访问过的新状态
+		unsigned int nextVisitedState = roomVisitedState | (1 << nextRoomIndex);
+		double newCost = floyd.distTo()[robotPosition][nextRoomIndex] + tspRecursive(nextRoomIndex, nextVisitedState, cost, pathTo, floyd);
+		
+		//当访问某一个房间(顶点)的总成本小于其他选择的时候，将该房间设定为机器人访问的下一位置
 		if (newCost < minCost) {
 			minCost = newCost;
-			index = nextRoomIndex;
+			nextRoomToVisit = nextRoomIndex;
 		}
 	}
 
-	pathTo[robotPosition][roomVisited] = index;
-	return state[robotPosition][roomVisited] = minCost;
+	pathTo[robotPosition][roomVisitedState] = nextRoomToVisit;
+	return cost[robotPosition][roomVisitedState] = minCost;
 }
 
-// Print path and cost
-void TSP::print()
+// 打印遍历所有顶点的最短路径信息
+void TSP::printPath()
 {
 	std::cout << "Travelling_Salesman_Problem Solution: " << std::endl;
 	std::cout << "Path: ";
