@@ -8,7 +8,7 @@ class Graph
 {
 private:
 	size_t _vexNum;    // 图的顶点个数 number of vertices  
-	size_t _edgeNum;  // 图的边数 number of edges
+	size_t _edgeNum;   // 图的边数 number of edges
 	size_t _graphType;   // 图的类型，1代表有向图，2代表无向图, types of graph, directedgraph is 1, undirectedgraph is 2.
 	std::vector<std::vector<double>> _adjMatrix;  //  邻接矩阵, 记录图中顶点和边的关系, adjacency matrix
 

@@ -2,6 +2,7 @@
 
 #include"Graph.h"
 #include"Floyd.h"
+#include <bitset>
 
 class TSP
 {

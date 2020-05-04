@@ -19,7 +19,7 @@ TSP::TSP(unsigned int startNode, const Graph& graph)
 	_startNode = startNode - 1;
 
 	// 初始化最短路径成本为极大值
-	double _minPathCost = DBL_MAX;
+	_minPathCost = DBL_MAX;
 }
 
 //析构函数
@@ -31,7 +31,7 @@ TSP::~TSP()
 void TSP::generatePath(const Floyd& floyd)
 {
 	// cost 记录机器人从当前房间位置及房间访问状态"进入下一房间及状态所需要的成本(cost)
-	std::vector<std::vector<double>> cost(_totalRoomNumber, std::vector<double>((1 << _totalRoomNumber), NULL));
+	std::vector<std::vector<double>> cost(_totalRoomNumber, std::vector<double>((1 << _totalRoomNumber), 0));
 
 	// PathTo 记录遍历所有房间（顶点）的最短访问顺序
 	std::vector<std::vector<unsigned int>> pathTo(_totalRoomNumber, std::vector<unsigned int>((1 << _totalRoomNumber), NULL));
