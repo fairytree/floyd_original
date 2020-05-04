@@ -9,9 +9,9 @@ TSP::TSP(unsigned int startNode, const Graph& graph)
 	// 房间（顶点）总数为图的顶点总数
 	_totalRoomNumber = graph.vexNum();
 
-	// 用bits来表示“所有顶点被访问过的状态”
+	// 用bits来表示“每一个顶点是否被访问过的状态”
 	// 例如一共有6个房间（顶点），初始状态为000001（右边第一个数字代表第1个房间，机器人从第1个房间开始，故默认第1个房间已被访问)
-	// 所有顶点被访问过的状态为111000时表示，第1、2、3个房间尚未访问过，第4、5、6个房间已被访问过
+	// 顶点访问状态的值为111000时表示，第1、2、3个房间尚未访问过，第4、5、6个房间已被访问过
 	// 当所有房间全部访问完毕的时候，最终的值为111111
 	_allRoomVisited = (1 << _totalRoomNumber) - 1;
 
@@ -27,6 +27,7 @@ TSP::~TSP()
 {
 }
 
+
 //生成遍历所有顶点需要途经的具体路径信息
 void TSP::generatePath(const Floyd& floyd)
 {
@@ -34,7 +35,7 @@ void TSP::generatePath(const Floyd& floyd)
 	std::vector<std::vector<double>> cost(_totalRoomNumber, std::vector<double>((1 << _totalRoomNumber), 0));
 
 	// PathTo 记录遍历所有房间（顶点）的最短访问顺序
-	std::vector<std::vector<unsigned int>> pathTo(_totalRoomNumber, std::vector<unsigned int>((1 << _totalRoomNumber), NULL));
+	std::vector<std::vector<unsigned int>> pathTo(_totalRoomNumber, std::vector<unsigned int>((1 << _totalRoomNumber), -1));
 
 	// 默认机器人的起始位置（顶点）已被访问过
 	unsigned int roomVisitedState = 1 << _startNode;
@@ -57,11 +58,11 @@ void TSP::generatePath(const Floyd& floyd)
 
 		//根据TSP生成的访问顶点的顺序，继续访问下一个顶点，直到全部访问完毕
 		unsigned int nextRoomToVisit = pathTo[nextPosition][roomVisitedState];
-		if (nextRoomToVisit == NULL) {
+		if (nextRoomToVisit == -1) {
 			break;
 		}
 
-		// nextVisitedState表示当下一个房间被访问后，所有房间被访问过的状态
+		// nextVisitedState表示当下一个房间被访问后，房间被访问过的状态
 		unsigned int nextVisitedState = roomVisitedState | (1 << nextRoomToVisit);
 		roomVisitedState = nextVisitedState;
 		currentPosition = nextPosition;
@@ -104,7 +105,7 @@ double TSP::tspRecursive(unsigned int robotPosition, unsigned int& roomVisitedSt
 			continue;
 		}
 
-		// nextVisitedState表示当下一个房间被访问后，所有房间被访问过的新状态
+		// nextVisitedState表示当下一个房间被访问后，房间被访问过的新状态
 		unsigned int nextVisitedState = roomVisitedState | (1 << nextRoomIndex);
 		double newCost = floyd.distTo()[robotPosition][nextRoomIndex] + tspRecursive(nextRoomIndex, nextVisitedState, cost, pathTo, floyd);
 		
