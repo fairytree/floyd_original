@@ -139,14 +139,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Floyd.cpp" />
-    <ClCompile Include="Floyd_new.cpp" />
+    <ClCompile Include="Floyd_function.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TSP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Floyd.h" />
-    <ClInclude Include="Floyd_new.h" />
+    <ClInclude Include="Floyd_function.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="TSP.h" />
   </ItemGroup>
